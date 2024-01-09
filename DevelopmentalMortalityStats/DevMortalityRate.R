@@ -1,8 +1,9 @@
 # The purpose of this file is to calculate the mean and 95% confidence interval of 
 # the developmental mortality rates from egg to pupation observed in replicate colonies
 
-# Here are the raw developmental mortality rates
-MortalityRates <- c(0.11, 0.11, 0.15, 0.15, 0.17, 0.22, 0.3)
+# Load the raw developmental mortality rates
+Data <- read.table("./SourceData_DevMortRates.txt", header = T)
+MortalityRates<-Data$MortalityRates
 
 # Use the t.test() function to calculate mean and 95% confidence interval
 result <- t.test(MortalityRates)
