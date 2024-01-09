@@ -8,7 +8,7 @@ for SAMPLE in Sample1 Sample2 Sample3; do
 	samtools depth -aa ${SAMPLE}_Trimmed_aligned_sorted_merged_dedup.bam >> ${SAMPLE}.depth
 
 	# Run a custom python script to obtain and process depth summary statistics
-	python ./scripts/DepthSummaryObtainer.py ./${SAMPLE}.depth
+	python ./DepthSummaryObtainer.py ./${SAMPLE}.depth
 	
 	# Remove the depth file after processing to save disk space
 	rm ./results/${SAMPLE}.depth
