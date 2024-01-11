@@ -1,0 +1,3 @@
+This directory contains a GraphPad prism file in which we performed a binomial test for whether our observation that 1/144 crossovers were associated with loss of heterozygosity when 2/3 of them should have been would be expected by chance.
+In the same file, we used the Wilson/Brown method to construct a 95% Confidence Interval for the proportion of offspring that bear segemental loss of heterozygosity on one or more chromosomes. This method is recommded when proportions are low
+or are close to zero, which was indeed the case for our data (none of 15 offspring bore a segmental loss of heterozygosity).
