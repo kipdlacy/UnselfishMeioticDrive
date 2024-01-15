@@ -4,3 +4,4 @@ AlignmentAndVariantCallingWGS/SelectSamplesUsedForStudy.sh
 *.vcf
 *.vcf.idx
 **/results/**
+**/data/**
