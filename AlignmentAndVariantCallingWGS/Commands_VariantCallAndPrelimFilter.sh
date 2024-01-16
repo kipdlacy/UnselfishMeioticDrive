@@ -91,4 +91,4 @@ vcftools \
 # From here, the file "ShortReadGenomes_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf" excludes all sites heterozygous in haploid males.
 
 # Removing all files except for this final file to clear up space.
-find ./ -name "ShortReadGenomes_*" ! -name "*NoHapHet.recode.vcf" -exec rm {} \;
+#find ./ -name "ShortReadGenomes_*" ! -name "*NoHapHet.recode.vcf" -exec rm {} \;
