@@ -5,142 +5,93 @@
 
 GATK=/home/kip/tools/gatk-4.2.0.0/gatk
 
-mkdir ./data/
+# mkdir ./data/
 
-### First we will perform within-colony analyses of recombination
+#######################################################################
+###
+###
+###  First we will perform within-colony analyses of recombination
+###
+###
+#######################################################################
 
-### We start by obtaining working files that contain just the samples we need for each analysis.
-### C16
-# $GATK SelectVariants \
-# 	-V ../DataFiles/data/ShortReadGenomes.vcf \
-# 	--sample-name C16B-3-1 \
-# 	--sample-name C16B-4-2 \
-# 	--sample-name SM65 \
-# 	--sample-name SM76 \
-# 	--sample-name SM83 \
-# 	--sample-name SM87 \
-# 	--sample-name W06 \
-# 	--sample-name W07 \
-# 	--select-type-to-include SNP \
-# 	-O ./data/C16_SNPs.vcf
-# 
-for COL in C16
-do
-# $GATK VariantFiltration \
-# 	-V ./data/$COL'_SNPs.vcf' \
-# 	--filter-name "QD" \
-# 	--filter-expression "QD < 2.0" \
-# 	--filter-name "FS" \
-# 	--filter-expression "FS > 55.0" \
-# 	--filter-name "MQ" \
-# 	--filter-expression "MQ < 55.0" \
-# 	--filter-name "MQRankSum" \
-# 	--filter-expression "MQRankSum < -8.5" \
-# 	--filter-name "ReadPosRankSum" \
-# 	--filter-expression "ReadPosRankSum < -6.0" \
-# 	-O ./data/$COL'_SNPs_GATKfilters.vcf'
-# $GATK SelectVariants \
-# 	-V ./data/$COL'_SNPs_GATKfilters.vcf' \
-# 	--exclude-filtered \
-# 	-O ./data/$COL'_SNPs_GATKfilt_RmFilt.vcf'
-# vcftools \
-# 	--vcf ./data/$COL'_SNPs_GATKfilt_RmFilt.vcf' \
-# 	--exclude-positions ../DataFiles/data/HaploidMaleHet.PosScreener  \
-# 	--recode \
-# 	--recode-INFO-all \
-# 	--out ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet'
-# $GATK VariantsToTable \
-# 	-V ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf' \
-# 	-F CHROM -F POS -F REF -F ALT -F FILTER \
-# 	-GF GT \
-# 	-O ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table'
-# $GATK VariantsToTable \
-# 	-V ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf' \
-# 	-F CHROM -F POS -F REF -F ALT -F FILTER \
-# 	-GF AD \
-# 	-O ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.AD.table'
-# python ../LossOfHeterozygosity_KnownPedigreePairs/CleanData_KeepPutativelyAncestralHet.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table'
-# python ./CleanData_KeepPutativelyAncestralHet_ModForHaploids.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table'
-# python ../LossOfHeterozygosity_KnownPedigreePairs/ScreenSNPsonADnDP.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet' ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.AD.table'
-# python ../AlignmentAndVariantCallingWGS/Process_VCFtoPosScreener.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs'
-# vcftools \
-# 	--vcf ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf' \
-# 	--positions ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.PosScreener' \
-# 	--recode \
-# 	--recode-INFO-all \
-# 	--out ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs'
-# done
-# 
-# 
-# $GATK SelectVariants \
-# 	-V ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode.vcf \
-# 	--sample-name C16B-3-1 \
-# 	--sample-name C16B-4-2 \
-# 	--sample-name W06 \
-# 	--sample-name W07 \
-# 	--exclude-non-variants \
-# 	--remove-unused-alternates \
-# 	-O ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf
-# 
-# $GATK SelectVariants \
-# 	-V ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode.vcf \
-# 	--sample-name SM65 \
-# 	--sample-name SM76 \
-# 	--sample-name SM83 \
-# 	--sample-name SM87 \
-# 	--exclude-non-variants \
-# 	--remove-unused-alternates \
-# 	-O ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf
-# 
-# 
-# for COL in C16
-# do
-# for TYPE in DipFem HapMale
-# do
-# $GATK VariantsToTable \
-# 	-V ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_'$TYPE'.vcf' \
-# 	-F CHROM -F POS -F REF -F ALT -F FILTER \
-# 	-GF GT \
-# 	-O ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_'$TYPE'.vcf.table'
-# python ./CleanData_AddContigNames.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_'$TYPE'.vcf.table' ../UsefulFiles/ContigPos_for_Obir.assembly.v5.4_ChromsOnly.txt
-# done
-# done
+### We start by obtaining working files that contain just the samples we need for each analysis. Note that these use internal sample codes
+### One analysis will be diploid females and haploid males from Line A colony C16
+$GATK SelectVariants -V ../DataFiles/data/ShortReadGenomes.vcf --sample-name C16B-3-1 --sample-name C16B-4-2 --sample-name SM65 --sample-name SM76 --sample-name SM83 --sample-name SM87 --sample-name W06 --sample-name W07 --select-type-to-include SNP -O ./data/C16_SNPs.vcf
+### Another will be diploid females and haploid males from Line B colony STC6
+$GATK SelectVariants -V ../DataFiles/data/ShortReadGenomes.vcf --sample-name SM03 --sample-name SM74 --sample-name SM75 --sample-name STC6L --sample-name W04 --sample-name W05 --select-type-to-include SNP -O ./data/STC6_SNPs.vcf
 
-###################
-#
-#   Pick up here
-#
-###################
+for COL in C16 STC6; do
+	# Filter according to GATK best practices
+	$GATK VariantFiltration -V ./data/$COL'_SNPs.vcf' --filter-name "QD" --filter-expression "QD < 2.0" --filter-name "FS" --filter-expression "FS > 55.0" --filter-name "MQ" --filter-expression "MQ < 55.0" --filter-name "MQRankSum" --filter-expression "MQRankSum < -8.5" --filter-name "ReadPosRankSum" --filter-expression "ReadPosRankSum < -6.0" -O ./data/$COL'_SNPs_GATKfilters.vcf'
+	# Remove filtered sites
+	$GATK SelectVariants -V ./data/$COL'_SNPs_GATKfilters.vcf' --exclude-filtered -O ./data/$COL'_SNPs_GATKfilt_RmFilt.vcf'
+	# Exclude sites where haploid samples are heterozygous (erroneously assembled regions of the reference genome)
+	vcftools --vcf ./data/$COL'_SNPs_GATKfilt_RmFilt.vcf' --exclude-positions ../DataFiles/data/HaploidMaleHet.PosScreener  --recode --recode-INFO-all --out ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet'
+	# Write genotypes to a table
+	$GATK VariantsToTable -V ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf' -F CHROM -F POS -F REF -F ALT -F FILTER -GF GT -O ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table'
+	# Write allelic depths to a table
+	$GATK VariantsToTable -V ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf' -F CHROM -F POS -F REF -F ALT -F FILTER -GF AD -O ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.AD.table'
+	# Keep only sites that are putatively ancestrally heterozygous for the parthenogenetic lineage	
+	python ./CleanData_KeepPutativelyAncestralHet_ModForHaploids.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table'
+	# Remove null variant calls (./. or ./C), and filter based on allelic depth
+	python ../LossOfHeterozygosity_KnownPedigreePairs/ScreenSNPsonADnDP.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet' ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.AD.table'
+	# Write a simple file to screen the VCF by
+	python ../AlignmentAndVariantCallingWGS/Process_VCFtoPosScreener.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs'
+	# Screen the VCF
+	vcftools --vcf ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf' --positions ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.PosScreener' --recode --recode-INFO-all --out ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs'
+done
 
-# for COL in C16
-# do
-# python ./src/LOH_GroupOfDiploidsHomRunFinder.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs' ./data/
-# python ./src/PhaseClean_RemoveNCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt' 1500
-# python ./src/PhaseClean_RemoveCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt' 1500
-# python ./src/PhaseClean_RemoveCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt' 5000
-# ## create a file for HaplotypeBlock presentation
-# python ./src/PhaseClean_RemoveFirstBlockForEachContig.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt'
-# done
-# 
-# 
-# for COL in  C16 STC6_3ind
-# do
-# python ./src/Recomb_HapPhaseSwitchScanner.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs'
-# python ./src/PhaseClean_RemoveNCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches.txt' 1500
-# python ./src/PhaseClean_RemoveCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches.txt' 1500
-# python ./src/PhaseClean_MergeAdjacents.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP.txt'
-# python ./src/PhaseClean_CountPhaseSwitches.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents.txt'
-# python ./src/PhaseClean_RemoveNCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches.txt' 5000
-# python ./src/PhaseClean_RemoveCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches.txt' 5000
-# python ./src/PhaseClean_MergeAdjacents.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan5000BP.txt'
-# python ./src/PhaseClean_CountPhaseSwitches.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan5000BP_MergeAdjacents.txt'
-# ## create a file for HaplotypeBlock presentation
-# python ./src/PhaseClean_RemoveFirstBlockForEachContig.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsGr8rThan1500BP.txt'
-# python ./src/PhaseClean_RemoveFirstBlockForEachContig.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents.txt'
-# cat ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved.txt' > ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt'
-# echo '' >> ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt'
-# tail -n +2 ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsGr8rThan1500BP_FirstBlocksOnContigRemoved.txt' >> ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt'
-# done
+## Now that the files are filtered, write files with relevant samples for analysis
+# Create a file with all Line A C16 Diploid Females
+$GATK SelectVariants -V ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode.vcf --sample-name C16B-3-1 --sample-name C16B-4-2 --sample-name W06 --sample-name W07 --exclude-non-variants --remove-unused-alternates -O ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf
+# Create a file with all Line A C16 Haploid Males
+$GATK SelectVariants -V ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode.vcf --sample-name SM65 --sample-name SM76 --sample-name SM83 --sample-name SM87 --exclude-non-variants --remove-unused-alternates -O ./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf
+# Create a file with all Line B STC6 Diploid Females
+$GATK SelectVariants -V ./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode.vcf --sample-name STC6L --sample-name W04 --sample-name W05 -O ./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf
+# Create a file with all Line B STC6 Haploid Males
+$GATK SelectVariants -V ./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode.vcf --sample-name SM03 --sample-name SM74 --sample-name SM75 -O ./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf
+
+for COL in C16 STC6; do
+	## Prepare data for analysis
+	for TYPE in DipFem HapMale; do
+		# write genotype tables
+		$GATK VariantsToTable -V ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_'$TYPE'.vcf' -F CHROM -F POS -F REF -F ALT -F FILTER -GF GT -O ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_'$TYPE'.vcf.table'
+		# Add contig names to the tables. The contig names help to determine when the start and endpoints of haplotype blocks or runs of homozygosity occur.
+		python ./CleanData_AddContigNames.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_'$TYPE'.vcf.table' ../UsefulFiles/ContigPos_for_Obir.assembly.v5.4_ChromsOnly.txt
+	done
+	## find runs of homozygosity among the group of diploids
+	python ./LOH_GroupOfDiploidsHomRunFinder.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs' ./data/
+	## create a file for HaplotypeBlock presentation
+	python ./PhaseClean_RemoveFirstBlockForEachContig.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt'
+	## find crossovers among haploid male genomes
+	python ./Recomb_HapPhaseSwitchScanner.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs'
+	## using a realistic cutoff for Noncrossover (NCO) tract length (1500) and a conservative one (5000)
+	for NCOcutoff in 1500 5000; do
+		###### First for the diploids
+		## create a file that removes all NCO-associated LOH and keeps only putative crossover (CO)-associated LOH
+		python ./PhaseClean_RemoveNCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt' $NCOcutoff
+		## create a file that removes all CO-associated LOH and keeps only putative NCO-associated LOH
+		python ./PhaseClean_RemoveCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt' $NCOcutoff
+		###### then for the haploids
+		## create a file that removes all NCO-associated LOH and keeps only putative crossover (CO)-associated LOH
+		python ./PhaseClean_RemoveNCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches.txt' $NCOcutoff
+		## create a file that removes all CO-associated LOH and keeps only putative NCO-associated LOH
+		python ./PhaseClean_RemoveCOLengthPBs.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches.txt' $NCOcutoff
+		## Once you've removed NCOs, there will be some CO-associated haplotype blocks that were previously interrupted by NCOs. These need to be merged.
+		python ./PhaseClean_MergeAdjacents.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP.txt'
+		## Once you've done that merging, we can tally the number of recombination events detected.
+		python ./PhaseClean_CountPhaseSwitches.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP_MergeAdjacents.txt'
+		## create a file for HaplotypeBlock presentation
+		python ./PhaseClean_RemoveFirstBlockForEachContig.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsGr8rThan'$NCOcutoff'BP.txt'
+		python ./PhaseClean_RemoveFirstBlockForEachContig.py ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP_MergeAdjacents.txt'
+		## create a file that contains all recombination events, including crossovers and gene conversions (NCOs)
+		cat ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP_MergeAdjacents_FirstBlocksOnContigRemoved.txt' > ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt'
+		echo '' >> ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt'
+		tail -n +2 ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsGr8rThan'$NCOcutoff'BP_FirstBlocksOnContigRemoved.txt' >> ./data/$COL'_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan'$NCOcutoff'BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt'
+	done
+done
+### Note that these files need to be manually curated to remove false positives, such as long LOH tracts that are only supported by a few SNPs.
 
 
 ###################################
