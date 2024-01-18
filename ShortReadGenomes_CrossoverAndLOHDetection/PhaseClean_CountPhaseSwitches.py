@@ -32,6 +32,9 @@ OutFile.write('chrom\tposition')
 
 ### Looping, identifying mergeable adjacents, writing out either unmerged or merged
 for i in range(0,len(PSs)):
+	# if not the first on the contig
+	# we count the beginning of each phase block as a recombination event
+	# and so the first SNP on a contig can't be one
 	if PSs[i][6] == 'No':
 		OutFile.write('\n'+PSs[i][0]+'\t'+PSs[i][2])
 
