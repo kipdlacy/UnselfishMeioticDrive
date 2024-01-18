@@ -1,9 +1,6 @@
 #! /usr/bin/env python
 
-### 20210803
-### This script is designed to read in a list of inferred phase switches, and merge any 
-### adjacent PBs within a contig that do not differ in phase
-### such might have previously been interrupted by zero length PBs.
+### This script is designed to remove phase blocks of length less than a user defined cutoff that is the maximum length of a noncrossover (gene conversion) tract
 
 ### Usage
 # python ./src/PhaseCleaner_MergeAdjacents.py PStable
@@ -17,6 +14,7 @@ def read_csv(filename, l_char='\n', spl_char='\t'):
 
 ### Passing Arguments
 PSfile=sys.argv[1]
+# user input max. NCO tract length
 NCOlen=int(sys.argv[2])
 
 ### Reading in FIles
