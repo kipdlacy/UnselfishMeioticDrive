@@ -2,8 +2,8 @@
 
 ### 20210803
 ### This script is designed to read in a list of inferred phase switches, and merge any 
-### adjacent PBs within a contig that do not differ in phase
-### such might have previously been interrupted by zero length PBs.
+### adjacent Phase Blocks within a contig that do not differ in phase
+### such might have previously been interrupted by zero length Phase Blocks.
 
 ### Usage
 # python ./src/PhaseCleaner_MergeAdjacents.py PStable
