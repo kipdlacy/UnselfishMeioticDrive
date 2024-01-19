@@ -65,17 +65,19 @@ kp$latest.plot$computed.values$max.density ## result: 65
 kp<-kpPlotDensity(kp, r0=at$r0, r1=at$r1, data=STC6_PutAncHet,window.size = 200000,col='grey',border=NA)
 kp$latest.plot$computed.values$max.density ## result: 151
 
-################################################
-#                                              #
-#                                              #
-#     Haplotype block length distributions     #
-#                                              #
-#                                              #
-################################################
+#########################################################################
+#                                                                       #
+#                                                                       #
+#     Haplotype block length distributions for Colonies C16 and STC6    #
+#                                                                       #
+#                                                                       #
+#########################################################################
 
 library(ggplot2)
 library(scales)
 options(scipen=0)
+
+####################### Line A Colony C16
 
 ### Load the haplotype blocks for recombination events observed among C16 haploids
 C16HapRecHaplotypes<-read.table("./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt",header = T)
@@ -123,6 +125,8 @@ SCAT <-ggplot(C16DipFemHaplotypes, aes(x=C16DipFemHaplotypes$InfLOHLength,y=C16D
 print(SCAT)
 dev.off()
 
+####################### Line B Colony STC6
+
 ### Load the haplotype blocks for recombination events observed among STC6 haploids
 STC6HapRecHaplotypes<-read.table("./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions_ManuallyScreened.txt",header = T)
 STC6blockLengths<-as.data.frame(STC6HapRecHaplotypes$InfBlockLength)
@@ -168,3 +172,108 @@ SCAT <-ggplot(STC6DipFemHaplotypes, aes(x=STC6DipFemHaplotypes$InfLOHLength,y=ST
   theme_bw(base_size = 15)
 print(SCAT)
 dev.off()
+
+#########################################################################
+#                                                                       #
+#                                                                       #
+#     Haplotype block length distributions for clonal lines A and B     #
+#                                                                       #
+#                                                                       #
+#########################################################################
+
+####################### Multicolony Line A
+
+### Recombination among haploids -- phase blocks from Line A, multi-colony dataset
+LineAHapRecHaplotypes<-read.table("./data/LineA_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt",header = T)
+LineAblockLengths<-as.data.frame(LineAHapRecHaplotypes$InfBlockLength)
+LineAblockLengths$`LineAHapRecHaplotypes$InfBlockLength`<-as.numeric(LineAblockLengths$`LineAHapRecHaplotypes$InfBlockLength`)
+### Loss of heterozygosity among diploids -- LOH blocks from Line A, multi-colony dataset
+LineADipFemHaplotypes<-read.table("./data/LineA_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt",header = T)
+LineADipFemblockLengths<-as.data.frame(LineADipFemHaplotypes$InfLOHLength)
+LineADipFemblockLengths$`LineADipFemHaplotypes$InfLOHLength`<-as.numeric(LineADipFemblockLengths$`LineADipFemHaplotypes$InfLOHLength`)
+
+### Histogram of recombination among line A haploid block lengths
+pdf("./results/MultiColonyNonPairwise/BlockLengths_LineAhaprec_NoLogX.pdf",width = 5,height = 4)
+PICTURE <-ggplot(LineAblockLengths, aes(x=LineAblockLengths$`LineAHapRecHaplotypes$InfBlockLength`)) + 
+  geom_histogram(bins = 50) +
+  scale_x_continuous(name="Length of Haplotype Block",breaks = c(0,250000,500000,750000,1000000)) +
+  scale_y_continuous(name="Number of Blocks") +
+  theme_bw(base_size = 15)
+print(PICTURE)
+dev.off()
+### Scatterplot of recombination haplotype block lengths plotted against the number of constituent SNPs
+pdf("./results/MultiColonyNonPairwise/NumSNPsVBlockLengths_LineAhaprec_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+SCAT <-ggplot(LineAHapRecHaplotypes, aes(x=LineAHapRecHaplotypes$InfBlockLength,y=LineAHapRecHaplotypes$NumSNPsInBlock)) +
+  geom_point(alpha=0.5) +
+  scale_x_continuous(name="Length of Haplotype Block",breaks = c(0,250000,500000,750000,1000000)) +
+  scale_y_continuous(name="Number of SNPs in Haplotype Block") +
+  theme_bw(base_size = 15)
+print(SCAT)
+dev.off()
+### Histogram of LOH among line A diploid block lengths
+pdf("./results/MultiColonyNonPairwise/NumSNPsVBlockLengths_LineAdipFem_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+SCAT <-ggplot(LineADipFemHaplotypes, aes(x=LineADipFemHaplotypes$InfLOHLength,y=LineADipFemHaplotypes$NumSNPsInLOH)) +
+  geom_point(alpha=0.5, size=3) +
+  scale_x_continuous(name="Length of Loss-of-Heterozygosity Tract",breaks = c(0,1000000,2000000,3000000,4000000)) +
+  scale_y_continuous(name="Number of SNPs in Tract") +
+  theme_bw(base_size = 15)
+print(SCAT)
+dev.off()
+### Scatterplot of LOH block lengths plotted against the number of constituent SNPs
+pdf("./results/MultiColonyNonPairwise/BlockLengths_LineAdipfem_NoLogX.pdf",width = 5,height = 4)
+PICTURE <-ggplot(LineADipFemblockLengths, aes(x=LineADipFemblockLengths$`LineADipFemHaplotypes$InfLOHLength`)) + 
+  geom_histogram(bins = 30) +
+  scale_x_continuous(name = "Length of Loss-of-Heterozygosity Tract",breaks = c(0,1000000,2000000,3000000,4000000)) +
+  scale_y_continuous(name="Number of Blocks") +
+  theme_bw(base_size = 15)
+print(PICTURE)
+dev.off()
+
+####################### Multicolony Line B
+
+### Recombination among haploids -- phase blocks from Line A, multi-colony dataset
+LineBHapRecHaplotypes<-read.table("./data/LineB_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt",header = T)
+LineBblockLengths<-as.data.frame(LineBHapRecHaplotypes$InfBlockLength)
+LineBblockLengths$`LineBHapRecHaplotypes$InfBlockLength`<-as.numeric(LineBblockLengths$`LineBHapRecHaplotypes$InfBlockLength`)
+### Loss of heterozygosity among diploids -- LOH blocks from Line A, multi-colony dataset
+LineBDipFemHaplotypes<-read.table("./data/LineB_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs.txt",header = T)
+LineBDipFemblockLengths<-as.data.frame(LineBDipFemHaplotypes$InfLOHLength)
+LineBDipFemblockLengths$`LineBDipFemHaplotypes$InfLOHLength`<-as.numeric(LineBDipFemblockLengths$`LineBDipFemHaplotypes$InfLOHLength`)
+
+### Histogram of recombination among line B haploid block lengths
+pdf("./results/MultiColonyNonPairwise/BlockLengths_LineBhaprec_NoLogX.pdf",width = 5,height = 4)
+PICTURE <-ggplot(LineBblockLengths, aes(x=LineBblockLengths$`LineBHapRecHaplotypes$InfBlockLength`)) + 
+  geom_histogram(bins = 50) +
+  scale_x_continuous(name="Length of Haplotype Block",breaks = c(0,1000000,2000000)) +
+  scale_y_continuous(name="Number of Blocks") +
+  theme_bw(base_size = 15)
+print(PICTURE)
+dev.off()
+### Scatterplot of recombination haplotype block lengths plotted against the number of constituent SNPs
+pdf("./results/MultiColonyNonPairwise/NumSNPsVBlockLengths_LineBhaprec_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+SCAT <-ggplot(LineBHapRecHaplotypes, aes(x=LineBHapRecHaplotypes$InfBlockLength,y=LineBHapRecHaplotypes$NumSNPsInBlock)) +
+  geom_point(alpha=0.5) +
+  scale_x_continuous(name="Length of Haplotype Block",breaks = c(0,1000000,2000000)) +
+  scale_y_continuous(name="Number of SNPs in Haplotype Block") +
+  theme_bw(base_size = 15)
+print(SCAT)
+dev.off()
+### Histogram of LOH among line B diploid block lengths
+pdf("./results/MultiColonyNonPairwise/NumSNPsVBlockLengths_LineBdipFem_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+SCAT <-ggplot(LineBDipFemHaplotypes, aes(x=LineBDipFemHaplotypes$InfLOHLength,y=LineBDipFemHaplotypes$NumSNPsInLOH)) +
+  geom_point(alpha=0.5, size=3) +
+  scale_x_continuous(name="Length of Loss-of-Heterozygosity Tract",breaks = c(0,1000000,2000000,3000000)) +
+  scale_y_continuous(name="Number of SNPs in Tract") +
+  theme_bw(base_size = 15)
+print(SCAT)
+dev.off()
+### Scatterplot of LOH block lengths plotted against the number of constituent SNPs
+pdf("./results/MultiColonyNonPairwise/BlockLengths_LineBdipfem_NoLogX.pdf",width = 5,height = 4)
+PICTURE <-ggplot(LineBDipFemblockLengths, aes(x=LineBDipFemblockLengths$`LineBDipFemHaplotypes$InfLOHLength`)) + 
+  geom_histogram(bins = 30) +
+  scale_x_continuous(name = "Length of Loss-of-Heterozygosity Tract",breaks = c(0,1000000,2000000,3000000)) +
+  scale_y_continuous(name="Number of Blocks") +
+  theme_bw(base_size = 15)
+print(PICTURE)
+dev.off()
+
