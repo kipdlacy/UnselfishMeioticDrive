@@ -1,5 +1,4 @@
-setwd("/Users/kiplacy/../../../../Volumes/antqueen/genomics/experiments/analyses/KDL20220509_FormalLOHnGOHAnalyses/")
-getwd()
+setwd("/Users/kiplacy/../../../../Volumes/antqueen/booster/KDL20240109_UploadCodeParthPaper/UnselfishMeioticDrive/LossOfHeterozygosity_KnownPedigreePairs/")
 
 ### Load plotting package
 library(karyoploteR)
@@ -9,17 +8,17 @@ Obir5.4withChr<-toGRanges("../UsefulFiles/GenomeForKaryoplotR_Obir5_4_withChr.tx
 
 ### Load data
 # Heterozygous sites in the mother of pair 1
-Pair1Mhet<-toGRanges('./results/NonTELL_MDpairs_SNPs_GATKfilters_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_Pair1.vcf.table_MD-B-1-MHet.PosScreener')
+Pair1Mhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-1-MHet.PosScreener')
 # Heterozygous sites in the daughter of pair 1
-Pair1Dhet<-toGRanges('./results/NonTELL_MDpairs_SNPs_GATKfilters_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_Pair1.vcf.table_MD-B-1-DHet.PosScreener')
+Pair1Dhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-1-DHet.PosScreener')
 # Sites that differ in heterozygosity between mother and daughter of pair 1 -- there was only a single SNP that was heterozygous in the mother but not in the daughter
-Pair1LOH<-toGRanges('./results/NonTELL_MDpairs_SNPs_GATKfilters_RmFilt_NoHapHet.recode_Pair1.vcf.table_Diffs_AllNucs_HetMADatLeast0.25_HomMADequalTo0_NoCovLessThn15_Curated.PosScreener')
+Pair1LOH<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_MD-B-1-M_v_MD-B-1-D.vcf.table_Diffs_Curated.PosScreener')
 # Heterozygous sites in the mother of pair 2
-Pair2Mhet<-toGRanges('./results/NonTELL_MDpairs_SNPs_GATKfilters_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_Pair7.vcf.table_MD-B-7-MHet.PosScreener')
+Pair2Mhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-7-MHet.PosScreener')
 # Heterozygous sites in the daughter of pair 2
-Pair2Dhet<-toGRanges('./results/NonTELL_MDpairs_SNPs_GATKfilters_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_Pair7.vcf.table_MD-B-7-D1Het.PosScreener')
+Pair2Dhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-7-D1Het.PosScreener')
 # Sites that differ in heterozygosity between mother and daughter of pair 2 -- there was only a single SNP that was homozygous in the mother but heterozygous in the daughter
-Pair2GOH<-toGRanges('./results/NonTELL_MDpairs_SNPs_GATKfilters_RmFilt_NoHapHet.recode_Pair7.vcf.table_Diffs_AllNucs_HetMADatLeast0.25_HomMADequalTo0_NoCovLessThn15_Curated.PosScreener')
+Pair2GOH<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_MD-B-7-M_v_MD-B-7-D1.vcf.table_Diffs_Curated.PosScreener')
 
 ### Plot the data along the reference genome
 pdf("./results/Karyoplot_GOHLOH_Borders_Dhet2.pdf",width = 15,height = 7) ## <- extra height to accomodate

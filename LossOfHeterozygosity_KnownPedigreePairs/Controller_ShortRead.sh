@@ -6,7 +6,7 @@
 # Telling bash where to find the GATK software
 GATK=/home/kip/tools/gatk-4.2.0.0/gatk
 
-# # Creating folders to store data files and results from the analysis
+# Creating folders to store data files and results from the analysis
 mkdir ./data/
 cp ../DataFiles/data/10000bpWindowsNonOverlapping.txt ./data/
 
@@ -107,7 +107,7 @@ vcftools \
 # Now that we have files with trustworthy variants that are putatively ancestrally heterozygous, we can analyze heterozygosity patterns across individuals.
 # We will start by writing separate VCF files for each pairwise comparison, and writing the genotype data to a table. 
 # Then we will find all differences in heterozygosity between the individuals in each pair.
-
+# 
 # Initialize an array to hold unique sample names
 declare -A UniqueSamples
 # List of comparisons
@@ -158,4 +158,6 @@ for SAMPLE in "${!UniqueSamples[@]}"; do
 	python Analysis_PropGenomeHet.py ./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_$SAMPLE'Het' ./data/10000bpWindowsNonOverlapping.txt
 	tail -n +2 ./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_$SAMPLE'Het_Prop_10000bpWindowsHet' >> ./data/Summary_ShortRead_10000bpWindowsHet.txt
 	echo >> ./data/Summary_ShortRead_10000bpWindowsHet.txt
+	echo $SAMPLE
+	python ../AlignmentAndVariantCallingWGS/Process_VCFtoPosScreener.py ./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_$SAMPLE'Het'
 done

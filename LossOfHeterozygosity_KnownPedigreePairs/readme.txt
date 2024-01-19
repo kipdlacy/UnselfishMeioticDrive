@@ -9,3 +9,5 @@ contain false positives, and need to be manually screened (by viewing in IGV) be
 The "Controller" scripts also contain code to assess the proportion of the genome that contains heterozygous SNPs.
 This is achieved by taking the well-filtered heterozygous SNP list for each sample and counting the number of 
 10kb nonoverlappint (adjacent) windows that contain at least one heterozygous SNP.
+
+The "PlotShortReadMDpairKaryoplots.R" script is used for plotting the data.
