@@ -77,154 +77,98 @@ library(ggplot2)
 library(scales)
 options(scipen=0)
 
-#####
-#####
-#  Official
-#####
-#####
-
-C16HapRecHaplotypes<-read.table("./data/C16_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_HapMale.vcf.table_Nucs_ADDPscreen_Intersected.recode.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt",header = T)
-head(C16HapRecHaplotypes)
+### Load the haplotype blocks for recombination events observed among C16 haploids
+C16HapRecHaplotypes<-read.table("./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt",header = T)
 C16blockLengths<-as.data.frame(C16HapRecHaplotypes$InfBlockLength)
-head(C16blockLengths)
-str(C16blockLengths)
 C16blockLengths$`C16HapRecHaplotypes$InfBlockLength`<-as.numeric(C16blockLengths$`C16HapRecHaplotypes$InfBlockLength`)
-str(C16blockLengths)
-head(C16blockLengths)
-
-C16DipFemHaplotypes<-read.table("./data/C16_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_DipFem.vcf.table_Nucs_ADDPscreen_Intersected.recode.vcf.table_Contigs_UniqLOHPresAbs.txt",header = T)
-head(C16DipFemHaplotypes)
+### Load the LOH blocks for recombination events inferred via LOH among C16 diploids
+C16DipFemHaplotypes<-read.table("./data/C16_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs_ManuallyScreened.txt",header = T)
 C16DipFemblockLengths<-as.data.frame(C16DipFemHaplotypes$InfLOHLength)
-head(C16DipFemblockLengths)
-str(C16DipFemblockLengths)
 C16DipFemblockLengths$`C16DipFemHaplotypes$InfLOHLength`<-as.numeric(C16DipFemblockLengths$`C16DipFemHaplotypes$InfLOHLength`)
-str(C16DipFemblockLengths)
-head(C16DipFemblockLengths)
 
-
-
-pdf("./results/UnknownPedigree/BlockLengths_C16haprec_LogX.pdf",width = 5,height = 4)
-PICTURE <-ggplot(C16blockLengths, aes(x=C16blockLengths$`C16HapRecHaplotypes$InfBlockLength`)) + 
-  geom_histogram(bins = 20) +
-  scale_x_continuous(name="Length of Haplotype Block (Bp)",trans = 'log10',breaks = c(1,10,100,1000,10000,100000,1000000),limits = c(1,4000000)) +
-  #scale_y_continuous(name="Counts",trans='log10',breaks = c(1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,150),limits = c(1,150)) +
-  scale_y_continuous(name="Number of Blocks") +
-  theme_bw(base_size = 15)
-print(PICTURE)
-dev.off()
-
-pdf("./results/UnknownPedigree/BlockLengths_C16haprec_NoLogX.pdf",width = 5,height = 4)
+### Plot haplotype block length histogram
+pdf("./results/BlockLengths_C16haprec_NoLogX.pdf",width = 5,height = 4)
 PICTURE <-ggplot(C16blockLengths, aes(x=C16blockLengths$`C16HapRecHaplotypes$InfBlockLength`)) + 
   geom_histogram(bins = 50) +
-  #geom_histogram(binwidth = 1000) +
   scale_x_continuous(name="Length of Haplotype Block (Bp)",limits = c(-100000,4000000)) +
-  #scale_y_continuous(name="Counts",trans='log10',breaks = c(1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,150),limits = c(1,150)) +
   scale_y_continuous(name="Number of Blocks") +
   theme_bw(base_size = 15)
 print(PICTURE)
 dev.off()
-
-pdf("./results/UnknownPedigree/NumSNPsVBlockLengths_C16haprec_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+### C16 recombination among haploids--Plot haplotype block length vs SNP number scatterplot to show that long haplotype blocks are not supported by just a few SNPs
+pdf("./results/NumSNPsVBlockLengths_C16haprec_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
 SCAT <-ggplot(C16HapRecHaplotypes, aes(x=C16HapRecHaplotypes$InfBlockLength,y=C16HapRecHaplotypes$NumSNPsInBlock)) +
   geom_point(alpha=0.5) +
   scale_x_continuous(name="Length of Haplotype Block (Bp)",breaks = c(0,1000000,2000000,3000000,4000000)) +
-  #scale_x_continuous(name="Length of Haplotype Block (Bp)") +
   scale_y_continuous(name="Number of SNPs in Haplotype Block") +
   theme_bw(base_size = 15)
 print(SCAT)
 dev.off()
-
-pdf("./results/UnknownPedigree/NumSNPsVBlockLengths_C16dipFem_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+### Plot LOH block length histogram
+pdf("./results/BlockLengths_C16dipfem_NoLogX.pdf",width = 5,height = 4)
+PICTURE <-ggplot(C16DipFemblockLengths, aes(x=C16DipFemblockLengths$`C16DipFemHaplotypes$InfLOHLength`)) + 
+  geom_histogram(bins = 30) +
+  scale_x_continuous(name="Length of Haplotype Block (Bp)", breaks = c(0,500000,1000000,1500000,2000000,2500000)) +
+  scale_y_continuous(name="Number of Blocks") +
+  theme_bw(base_size = 15)
+print(PICTURE)
+dev.off()
+### C16 LOH among diploids -- scatterplot of block length vs SNP number to show that long LOH tracts are supported by a corresponding number of SNPs
+pdf("./results/NumSNPsVBlockLengths_C16dipFem_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
 SCAT <-ggplot(C16DipFemHaplotypes, aes(x=C16DipFemHaplotypes$InfLOHLength,y=C16DipFemHaplotypes$NumSNPsInLOH)) +
   geom_point(alpha=0.5, size=3) +
   scale_x_continuous(name="Length of Haplotype Block (Bp)",breaks = c(0,500000,1000000,1500000,2000000,2500000)) +
-  #scale_x_continuous(name="Length of Haplotype Block (Bp)") +
   scale_y_continuous(name="Number of SNPs in Haplotype Block") +
   theme_bw(base_size = 15)
 print(SCAT)
 dev.off()
 
-pdf("./results/UnknownPedigree/BlockLengths_C16dipfem_NoLogX.pdf",width = 5,height = 4)
-PICTURE <-ggplot(C16DipFemblockLengths, aes(x=C16DipFemblockLengths$`C16DipFemHaplotypes$InfLOHLength`)) + 
-  geom_histogram(bins = 30) +
-  #geom_histogram(binwidth = 1000) +
-  scale_x_continuous(name="Length of Haplotype Block (Bp)", breaks = c(0,500000,1000000,1500000,2000000,2500000)) +
-  #scale_y_continuous(name="Counts",trans='log10',breaks = c(1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,150),limits = c(1,150)) +
-  scale_y_continuous(name="Number of Blocks") +
-  theme_bw(base_size = 15)
-print(PICTURE)
-dev.off()
-
- 
-STC6HapRecHaplotypes<-read.table("./data/STC6_3ind_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_HapMale.vcf.table_Nucs_ADDPscreen_Intersected.recode.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions.txt",header = T)
-head(STC6HapRecHaplotypes)
+### Load the haplotype blocks for recombination events observed among STC6 haploids
+STC6HapRecHaplotypes<-read.table("./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_HapMale.vcf.table_Contigs_PhaseSwitches_NoPBsLessThan1500BP_MergeAdjacents_FirstBlocksOnContigRemoved_MergedWithGeneConversions_ManuallyScreened.txt",header = T)
 STC6blockLengths<-as.data.frame(STC6HapRecHaplotypes$InfBlockLength)
-head(STC6blockLengths)
-str(STC6blockLengths)
 STC6blockLengths$`STC6HapRecHaplotypes$InfBlockLength`<-as.numeric(STC6blockLengths$`STC6HapRecHaplotypes$InfBlockLength`)
-str(STC6blockLengths)
-head(STC6blockLengths)
-
-STC6DipFemHaplotypes<-read.table("./data/STC6_3ind_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_DipFem.vcf.table_Nucs_ADDPscreen_Intersected.recode.vcf.table_Contigs_UniqLOHPresAbs.txt",header = T)
-head(STC6DipFemHaplotypes)
+### Load the LOH blocks for recombination events inferred via LOH among STC6 diploids
+STC6DipFemHaplotypes<-read.table("./data/STC6_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf.table_Contigs_UniqLOHPresAbs_ManuallyScreened.txt",header = T)
 STC6DipFemblockLengths<-as.data.frame(STC6DipFemHaplotypes$InfLOHLength)
-head(STC6DipFemblockLengths)
-str(STC6DipFemblockLengths)
 STC6DipFemblockLengths$`STC6DipFemHaplotypes$InfLOHLength`<-as.numeric(STC6DipFemblockLengths$`STC6DipFemHaplotypes$InfLOHLength`)
-str(STC6DipFemblockLengths)
-head(STC6DipFemblockLengths)
 
-pdf("./results/UnknownPedigree/BlockLengths_STC6haprec_LogX.pdf",width = 5,height = 4)
-PICTURE <-ggplot(STC6blockLengths, aes(x=STC6blockLengths$`STC6HapRecHaplotypes$InfBlockLength`)) + 
-  geom_histogram(bins = 20) +
-  scale_x_continuous(name="Length of Haplotype Block (Bp)",trans = 'log10',breaks = c(1,10,100,1000,10000,100000,1000000),limits = c(1,6000000)) +
-  #scale_y_continuous(name="Counts",trans='log10',breaks = c(1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,150),limits = c(1,150)) +
-  scale_y_continuous(name="Number of Blocks") +
-  theme_bw(base_size = 15)
-print(PICTURE)
-dev.off()
-
-pdf("./results/UnknownPedigree/BlockLengths_STC6haprec_NoLogX.pdf",width = 5,height = 4)
+### STC6 haploids -- Plot haplotype block length histogram
+pdf("./results/BlockLengths_STC6haprec_NoLogX.pdf",width = 5,height = 4)
 PICTURE <-ggplot(STC6blockLengths, aes(x=STC6blockLengths$`STC6HapRecHaplotypes$InfBlockLength`)) + 
   geom_histogram(bins = 50) +
-  #geom_histogram(binwidth = 1000) +
   scale_x_continuous(name="Length of Haplotype Block (Bp)",limits = c(-100000,6000000),breaks = c(0,1000000,2000000,3000000,4000000,5000000,6000000)) +
-  #scale_y_continuous(name="Counts",trans='log10',breaks = c(1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,150),limits = c(1,150)) +
   scale_y_continuous(name="Number of Blocks") +
   theme_bw(base_size = 15)
 print(PICTURE)
 dev.off()
-
-pdf("./results/UnknownPedigree/NumSNPsVBlockLengths_STC6haprec_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+### STC6 recombination among haploids--Plot haplotype block length vs SNP number scatterplot to show that long haplotype blocks are not supported by just a few SNPs
+pdf("./results/NumSNPsVBlockLengths_STC6haprec_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
 SCAT <-ggplot(STC6HapRecHaplotypes, aes(x=STC6HapRecHaplotypes$InfBlockLength,y=STC6HapRecHaplotypes$NumSNPsInBlock)) +
   geom_point(alpha=0.5) +
   scale_x_continuous(name="Length of Haplotype Block (Bp)",breaks = c(0,1000000,2000000,3000000,4000000,5000000,6000000)) +
-  #scale_x_continuous(name="Length of Haplotype Block (Bp)") +
   scale_y_continuous(name="Number of SNPs in Haplotype Block") +
   theme_bw(base_size = 15)
 print(SCAT)
 dev.off()
-
-pdf("./results/UnknownPedigree/NumSNPsVBlockLengths_STC6dipFem_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
-SCAT <-ggplot(STC6DipFemHaplotypes, aes(x=STC6DipFemHaplotypes$InfLOHLength,y=STC6DipFemHaplotypes$NumSNPsInLOH)) +
-  geom_point(alpha=0.5, size=3) +
-  scale_x_continuous(name="Length of Haplotype Block (Bp)",breaks = c(0,500000,1000000,1500000,2000000), limits=c(-50000,1500000)) +
-  #scale_x_continuous(name="Length of Haplotype Block (Bp)") +
-  scale_y_continuous(name="Number of SNPs in Haplotype Block") +
-  theme_bw(base_size = 15)
-print(SCAT)
-dev.off()
-
-pdf("./results/UnknownPedigree/BlockLengths_STC6dipfem_NoLogX.pdf",width = 5,height = 4)
+### STC6 diploids -- Plot LOH block length histogram
+pdf("./results/BlockLengths_STC6dipfem_NoLogX.pdf",width = 5,height = 4)
 PICTURE <-ggplot(STC6DipFemblockLengths, aes(x=STC6DipFemblockLengths$`STC6DipFemHaplotypes$InfLOHLength`)) + 
   geom_histogram(bins = 30) +
-  #geom_histogram(binwidth = 1000) +
   scale_x_continuous(name="Length of Haplotype Block (Bp)",breaks = c(0,500000,1000000,1500000), limits = c(-50000,1500000)) +
-  #scale_y_continuous(name="Counts",trans='log10',breaks = c(1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,150),limits = c(1,150)) +
   scale_y_continuous(name="Number of Blocks") +
   theme_bw(base_size = 15)
 print(PICTURE)
 dev.off()
+### STC6 LOH among diploids -- scatterplot of block length vs SNP number to show that long LOH tracts are supported by a corresponding number of SNPs
+pdf("./results/NumSNPsVBlockLengths_STC6dipFem_NoLogX_inclGeneConv.pdf",width = 5,height = 4)
+SCAT <-ggplot(STC6DipFemHaplotypes, aes(x=STC6DipFemHaplotypes$InfLOHLength,y=STC6DipFemHaplotypes$NumSNPsInLOH)) +
+  geom_point(alpha=0.5, size=3) +
+  scale_x_continuous(name="Length of Haplotype Block (Bp)",breaks = c(0,500000,1000000,1500000,2000000), limits=c(-50000,1500000)) +
+  scale_y_continuous(name="Number of SNPs in Haplotype Block") +
+  theme_bw(base_size = 15)
+print(SCAT)
+dev.off()
+
 
 
 
