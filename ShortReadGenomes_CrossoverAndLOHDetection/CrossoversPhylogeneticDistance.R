@@ -1,5 +1,3 @@
-setwd("/Users/kiplacy/../../../../Volumes/antqueen/genomics/experiments/analyses/KDL20220511_HapMaleRecDipFemLOH/")
-
 ### To determine whether the abundance of crossovers observed among haploid male genomes have accumulated over many generations
 ### we investigated the association of the number of crossovers with the phylogenetic distance between samples
 ### To ensure independence of these data, we investigated samples from multiple field-collected (and somewhat genetically distinct)
