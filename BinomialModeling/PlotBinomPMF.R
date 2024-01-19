@@ -45,6 +45,12 @@ dev.off()
 # Determine the probability that at least one segmental LOH occurs
 sum(dbinom(1:14,size=14,prob=(.5*(5.5/14))))
 sum(Chromosomes * dbinom(Chromosomes,size=14,prob=(.5*(5.5/14))))
+# Calculate and print the binomial PMF for each number of chromosomes with two significant digits
+for (n in Chromosomes) {
+  pmf_value = dbinom(n, size = 14, prob = (.5*(5.5/14)))
+  formatted_pmf = format(pmf_value, digits = 3, scientific = FALSE)
+  print(paste(n, formatted_pmf))
+}
 
 # Then, using the same number of crossovers per meiosis (5.5), we substitute a 
 # different rate at which segmental LOH occurs following a crossover. Under Mendelian segregation, this would be 0.5
@@ -60,6 +66,12 @@ plot(Chromosomes,dbinom(Chromosomes, size=14, prob=(.1*(5.5/14))),type='h',lwd=3
 dev.off()
 # Determine the probability that at least one segmental LOH occurs
 sum(dbinom(1:14,size=14,prob=(.1*(5.5/14))))
+# Calculate and print the binomial PMF for each number of chromosomes with two significant digits
+for (n in Chromosomes) {
+  pmf_value = dbinom(n, size = 14, prob = (.1*(5.5/14)))
+  formatted_pmf = format(pmf_value, digits = 3, scientific = FALSE)
+  print(paste(n, formatted_pmf))
+}
 
 #####################################################################################################  
 ###                                                                                               ###
@@ -113,6 +125,9 @@ df$`Probability Pupa Bears LOH` <- mapply(CalculateLOHProportion, df$`Crossovers
 df$`Crossovers per Chromosome` <- as.factor(df$`Crossovers per Chromosome`)
 # Inspect the dataframe
 head(df)
+# write to file
+write.table(df, file = "Fig4d.txt", sep = "\t", row.names = FALSE)
+
 
 # Plot
 # Setting up a pdf to save the plot
@@ -206,8 +221,10 @@ CrossoversPerChromosomeEmpirical=5.5/14
 df <- expand.grid(CosegregationProb = CosegregationVals, MortalityRate = MortalityVals)
 
 # Apply the function across this grid of values to calculate "ProbabilityPupaBearsLOH"
-df$`Probability Pupa Bears LOH` <- mapply(CalculateLOHProportion, CrossoversPerChromosomeEmpirical, results$MortalityRate, results$CosegregationProb)
+df$`Probability Pupa Bears LOH` <- mapply(CalculateLOHProportion, CrossoversPerChromosomeEmpirical, df$MortalityRate, df$CosegregationProb)
 head(df)
+# write to file
+write.table(df, file = "Fig4e.txt", sep = "\t", row.names = FALSE)
 
 # NEXT WE WANT TO OBTAIN A CURVE THAT DEPICTS THE LOWEST VALUE OF CO-SEGREGATION PROBABILITY
 # FOR WHICH THE PROBABILITY THAT A PUPA BEARS LOH FALLS WITHIN THE 95% CI OF THE EMPIRICAL ESTIMATE
@@ -242,6 +259,10 @@ FirstOccurrence <- which(CosegregationValHighestProbLOH$CosegregationProb == 0.5
 if (!is.na(FirstOccurrence)) {
   CosegregationValHighestProbLOH <- CosegregationValHighestProbLOH[1:FirstOccurrence, ]
 }
+head(CosegregationValHighestProbLOH)
+# write to file
+write.table(CosegregationValHighestProbLOH, file = "Fig4e_curve.txt", sep = "\t", row.names = FALSE)
+
 
 # Plot the relationship
 pdf("./HeatMapAndMinimalCosegregationProb_0.4COsPerChrom_PropPupLOH.pdf", width = 6, height = 4)
