@@ -5,3 +5,4 @@ For haploids, we can identify crossovers directly as changes in relative phasing
 The controller script contains the commands to run this analysis, and several steps utilize custom python scripts.
 The lists output from those scripts need to be manually curated by inspected all relevant aligned genomes in IGV.
 Plotting is done in R scripts.
+Figure 2B was drawn in GraphpadPrism
