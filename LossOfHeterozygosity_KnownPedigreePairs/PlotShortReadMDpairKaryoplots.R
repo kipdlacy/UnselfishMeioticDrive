@@ -7,17 +7,17 @@ library(karyoploteR)
 Obir5.4withChr<-toGRanges("../UsefulFiles/GenomeForKaryoplotR_Obir5_4_withChr.txt")
 
 ### Load data
-# Heterozygous sites in the mother of pair 1
+# Heterozygous sites in the mother of pair 1 --- note that these are NOT manually curated
 Pair1Mhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-1-MHet.PosScreener')
-# Heterozygous sites in the daughter of pair 1
+# Heterozygous sites in the daughter of pair 1 --- note that these are NOT manually curated
 Pair1Dhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-1-DHet.PosScreener')
-# Sites that differ in heterozygosity between mother and daughter of pair 1 -- there was only a single SNP that was heterozygous in the mother but not in the daughter
+# Manually-curated sites that differ in heterozygosity between mother and daughter of pair 1 -- there was only a single SNP that was heterozygous in the mother but not in the daughter
 Pair1LOH<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_MD-B-1-M_v_MD-B-1-D.vcf.table_Diffs_Curated.PosScreener')
-# Heterozygous sites in the mother of pair 2
+# Heterozygous sites in the mother of pair 2 --- note that these are NOT manually curated
 Pair2Mhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-7-MHet.PosScreener')
-# Heterozygous sites in the daughter of pair 2
+# Heterozygous sites in the daughter of pair 2 --- note that these are NOT manually curated
 Pair2Dhet<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode.vcf.table_MD-B-7-D1Het.PosScreener')
-# Sites that differ in heterozygosity between mother and daughter of pair 2 -- there was only a single SNP that was homozygous in the mother but heterozygous in the daughter
+# Manually-curated sites that differ in heterozygosity between mother and daughter of pair 2 -- there was only a single SNP that was homozygous in the mother but heterozygous in the daughter
 Pair2GOH<-toGRanges('./data/ShortRead_MDpairs_SNPs_GATKfilt_RmFilt_NoHapHet.recode.vcf.table_PutAncHet_ADDPscreenNucs.recode_MD-B-7-M_v_MD-B-7-D1.vcf.table_Diffs_Curated.PosScreener')
 
 ### Plot the data along the reference genome
