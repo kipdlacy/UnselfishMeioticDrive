@@ -14,11 +14,11 @@ library(ggtree)
 library(ape)
 
 ### Save the path to the GATK vcf
-LineADips<-"./data/ForR/LineA_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.vcf"
+LineADips<-"./data/LineAmultiCol_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf"
 ### turn the VCF file into a less data intensive form (GDS) for easier computing
-snpgdsVCF2GDS(LineADips,"./data/ForR/LineA_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.gds",method ="biallelic.only")
+snpgdsVCF2GDS(LineADips,"./data/LineAmultiCol_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.gds",method ="biallelic.only")
 ### Prepare the data so it is formatted correctly to create a dissimilarity matrix.
-genofileLineADips <- snpgdsOpen("./data/ForR/LineA_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.gds")
+genofileLineADips <- snpgdsOpen("./data/LineAmultiCol_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.gds")
 set.seed(100) ## making the code reproducible
 ## Test Begin
 snpgdsDiss(genofileLineADips,num.thread=2, autosome.only=FALSE)
@@ -41,11 +41,11 @@ cophenetic.phylo(LineADipsPhylo)
 
 
 ### Save the path to the GATK vcf as a variable
-LineBDips<-"./data/ForR/LineB_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.vcf"
+LineBDips<-"./data/LineBmultiCol_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.vcf"
 ### turn the VCF file into a less data intensive form (GDS) for easier computing
-snpgdsVCF2GDS(LineBDips,"./data/ForR/LineB_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.gds",method ="biallelic.only")
+snpgdsVCF2GDS(LineBDips,"./data/LineBmultiCol_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.gds",method ="biallelic.only")
 ### Prepare the data so it is formatted correctly to create a dissimilarity matrix.
-genofileLineBDips <- snpgdsOpen("./data/ForR/LineB_MultiCol_SNPs_GATKfilters_RmFilt_NoHapHet.recode_PutAncHet.recode_ADDPscreenNucs.recode_DipFem.gds")
+genofileLineBDips <- snpgdsOpen("./data/LineBmultiCol_SNPs_GATKfilt_RmFilt_NoHapHet.recode_PutAncHet_ADDPscreenNucs.recode_DipFem.gds")
 set.seed(100) ## making the code reproducible
 ibs_LineBDips <- snpgdsHCluster(snpgdsIBS(genofileLineBDips,num.thread=2, autosome.only=FALSE))
 rvLineBDips <- snpgdsCutTree(ibs_LineBDips)
