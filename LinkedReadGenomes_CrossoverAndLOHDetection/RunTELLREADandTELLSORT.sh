@@ -44,7 +44,7 @@ echo 'starting '$CODE
 	-r2 /path/to/output/directory/tellreadOUT/Full/tellreadOUT_R2_$CODE.fastq.gz.corrected.fastq.err_barcode_removed.fastq.gz \
 	-i1 /path/to/output/directory/tellreadOUT/Full/tellreadOUT_I1_$CODE.fastq.gz.corrected.fastq.err_barcode_removed.fastq.gz \
 	-r /path/to/GenomeReferenceDirectory/Obir/GenomeAssemblyFilename.fasta \
-	-o /path/to/output/directory/tellreadOUT/tellsortOUT/$CODE \
+	-o /path/to/output/directory/tellsortOUT/$CODE \
 	-p $CODE \
 	# A trusted SNP file is used for some preliminary QC. But SNPs were called separately in tellread.
 	-v /path/to/KnownVariantFileForPrelimQC/TrustedSNPs.vcf \
