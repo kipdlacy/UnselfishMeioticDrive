@@ -1,6 +1,7 @@
 #! /usr/bin/bash
 
 ### This file is designed to compare phasing among different individuals of interest after filtering
+### And then filter those "phase switches", or putative crossovers, to provide a list of not obviously false positive crossovers for manual screening
 
 #####################################################
 ###                                               ###
@@ -31,6 +32,35 @@ for Pair in "${SamplePairs[@]}"; do
 		### each such difference is a putative crossover event
 		mkdir -p "./results/Comparisons/${SAMPLE1}_v_${SAMPLE2}/"
 		vcftools --vcf "$File1" --diff "$File2" --diff-switch-error --out "./results/Comparisons/${SAMPLE1}_v_${SAMPLE2}/chr${CHROM}_SwitchErrors"
+		#######################
+		######### Now #########
+		###### Filtering ######
+		###### Putative #######
+		###### Crossovers #####
+		#######################
+		### Define file paths
+		SwitchErrorsFile="./results/Comparisons/${SAMPLE1}_v_${SAMPLE2}/chr$CHROM'_SwitchErrors.diff.switch'"
+		ScreenedSitesSAMPLE1="./data/Samples/$SAMPLE1/chr$CHROM'_AllScreenedSitesUnordered_NoIndels.txt'"
+		ScreenedSitesSAMPLE2="./data/Samples/$SAMPLE2/chr$CHROM'_AllScreenedSitesUnordered_NoIndels.txt'"
+		VCFtableSAMPLE1="./data/Samples/$SAMPLE1/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table'"
+		VCFtableSAMPLE2="./data/Samples/$SAMPLE2/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table'"
+		### first remove all crossovers in which the focal SNPs are intervened by or flanked by (within two flanking SNPs on either side) previously screened SNPs
+		### such sites are likely genome assembly errors, and so the phasing cannot be trusted
+		python ./src/PSscreen_BadSNPsIntervenePS.py $SwitchErrorsFile $ScreenedSitesSAMPLE1 $ScreenedSitesSAMPLE2 BadSNP Remove
+		python ./src/PSscreen_BadSNPsFlankPS.py ${SwitchErrorsFile}_NoBadSNPInter.bed $ScreenedSitesSAMPLE1 $ScreenedSitesSAMPLE2 $VCFtableSAMPLE1 $VCFtableSAMPLE2 BadSNP 1 Remove
+		### Remove crossovers that occur at sites that are intervened by, or are flanked by (within two flanking SNPs on either side) sites with zero read depth
+		### such sites are likely genome assembly errors, and so the phasing cannot be trusted
+		python ./src/PSscreen_BadSNPsIntervenePS.py ${SwitchErrorsFile}_NoBadSNPInter_NoBadSNPWN_1.bed ${ScreenedSitesSAMPLE1}_ZeroesOnly.txt ${ScreenedSitesSAMPLE2}_ZeroesOnly.txt 0cov Remove
+		python ./src/PSscreen_BadSNPsFlankPS.py ${SwitchErrorsFile}_NoBadSNPInter_NoBadSNPWN_1_No0covInter.bed ${ScreenedSitesSAMPLE1}_ZeroesOnly.txt ${ScreenedSitesSAMPLE2}_ZeroesOnly.txt $VCFtableSAMPLE1 $VCFtableSAMPLE2 0cov 1 Remove
+		### Remove phase switches flanked or intervened by sites with 0 coverage if read depth counts only count reads with MAPQ>=1
+		### This excludes sites with MAPQ<1, for which the phase cannot be trusted, because reads may have aligned to multiple sites in the genome
+		python ./src/PSscreen_BadSNPsIntervenePS.py ${SwitchErrorsFile}_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1.bed ${ScreenedSitesSAMPLE1}_MAPQ0_ZeroesOnly.txt ${ScreenedSitesSAMPLE2}_MAPQ0_ZeroesOnly.txt MAPQ0 Remove
+		python ./src/PSscreen_BadSNPsFlankPS.py ${SwitchErrorsFile}_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter.bed ${ScreenedSitesSAMPLE1}_MAPQ0_ZeroesOnly.txt ${ScreenedSitesSAMPLE2}_MAPQ0_ZeroesOnly.txt $VCFtableSAMPLE1 $VCFtableSAMPLE2 MAPQ0 1 Remove
+		### Then count the number of intervening and flanking sites with coverage greater than 2x the genome-wide mean in either focal sample.
+		python ./src/PSscreen_BadSNPsIntervenePS.py ${SwitchErrorsFile}_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter_NoMAPQ0WN_1.bed ${ScreenedSitesSAMPLE1}_DepthAbove2xMean.txt ${ScreenedSitesSAMPLE2}_DepthAbove2xMean.txt 2xMeanCov Count
+		python ./src/PSscreen_BadSNPsFlankPS.py ${SwitchErrorsFile}_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter_NoMAPQ0WN_1_2xMeanCovInterCount.bed ${ScreenedSitesSAMPLE1}_DepthAbove2xMean.txt ${ScreenedSitesSAMPLE2}_DepthAbove2xMean.txt $VCFtableSAMPLE1 $VCFtableSAMPLE2 2xMeanCov 2 Count
+		### Append minor allele frequencies to each putative crossover
+		python ./src/PSscreen_FetchMAF.py ${SwitchErrorsFile}_final.bed $SAMPLE1 $VCFtableSAMPLE1 $SAMPLE2 $VCFtableSAMPLE2
 	done
 done
 
@@ -64,6 +94,33 @@ for i in "${!Samples[@]}"; do
 		 --diff ./data/Samples/$SAMPLE2/hapblock_chr$CHROM.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode'_SNPsOnly.vcf'_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf \
 		 --diff-switch-error \
 		 --out ./results/Comparisons/${SAMPLE1}_v_${SAMPLE2}/chr$CHROM'_SwitchErrors'
+		#######################
+		######### Now #########
+		###### Filtering ######
+		###### Putative #######
+		###### Crossovers #####
+		#######################
+		### first remove all phase switches in which the focal SNPs are intervened by previously screened SNPs.
+		echo "remove all phase switches in which the focal SNPs are intervened by previously screened SNPs. ./src/PSscreen_BadSNPsIntervenePS.py"
+		python ./src/PSscreen_BadSNPsIntervenePS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch' ./data/Samples/$SAMPLE1/chr$CHROM'_AllScreenedSitesUnordered_NoIndels.txt' ./data/Samples/$SAMPLE2/chr$CHROM'_AllScreenedSitesUnordered_NoIndels.txt' BadSNP Remove
+		### then remove all phase switches that have a previously screened SNP within two flanking SNPs on either side
+		echo "remove all phase switches that have a previously screened SNP within two flanking SNPs on either side ./src/PSscreen_BadSNPsFlankPS.py"
+		python ./src/PSscreen_BadSNPsFlankPS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter.bed' ./data/Samples/$SAMPLE1/chr$CHROM'_AllScreenedSitesUnordered_NoIndels.txt' ./data/Samples/$SAMPLE2/chr$CHROM'_AllScreenedSitesUnordered_NoIndels.txt' ./data/Samples/$SAMPLE1/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' ./data/Samples/$SAMPLE2/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' BadSNP 1 Remove
+		### Next remove phase switches that are flanked by or intervened by sites with zero coverage in either of the focal samples. Need to first identify such sites using samtools depth on the focal bam files.
+		echo "remove all phase switches that have a previously screened SNP within two flanking SNPs on either side ./src/PSscreen_BadSNPsIntervenePS.py ./src/PSscreen_BadSNPsFlankPS.py"
+		python ./src/PSscreen_BadSNPsIntervenePS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1.bed' ./data/Samples/$SAMPLE1/AllDepth.txt_ZeroesOnly.txt ./data/Samples/$SAMPLE1/AllDepth.txt_ZeroesOnly.txt 0cov Remove
+		python ./src/PSscreen_BadSNPsFlankPS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1_No0covInter.bed' ./data/Samples/$SAMPLE1/AllDepth.txt_ZeroesOnly.txt ./data/Samples/$SAMPLE1/AllDepth.txt_ZeroesOnly.txt ./data/Samples/$SAMPLE1/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' ./data/Samples/$SAMPLE2/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' 0cov 1 Remove
+		### Remove phase switches flanked or intervened by sites with 0 coverage if read depth counts only count reads with MAPQ>=1
+		echo "Remove phase switches flanked or intervened by sites with 0 coverage if read depth counts only count reads with MAPQ>=1 ./src/PSscreen_BadSNPsIntervenePS.py ./src/PSscreen_BadSNPsFlankPS.py"
+		python ./src/PSscreen_BadSNPsIntervenePS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1.bed' ./data/Samples/$SAMPLE1/AllQualDepth.txt_ZeroesOnly.txt ./data/Samples/$SAMPLE1/AllQualDepth.txt_ZeroesOnly.txt MAPQ0 Remove
+		python ./src/PSscreen_BadSNPsFlankPS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter.bed' ./data/Samples/$SAMPLE1/AllQualDepth.txt_ZeroesOnly.txt ./data/Samples/$SAMPLE1/AllQualDepth.txt_ZeroesOnly.txt ./data/Samples/$SAMPLE1/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' ./data/Samples/$SAMPLE2/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' MAPQ0 1 Remove
+		### Then count the number of intervening and flanking sites with coverage greater than 2x the genome-wide mean in either focal sample.
+		echo "count the number of intervening and flanking sites with coverage greater than 2x the genome-wide mean in either focal sample. ./src/PSscreen_BadSNPsIntervenePS.py ./src/PSscreen_BadSNPsFlankPS.py"
+		python ./src/PSscreen_BadSNPsIntervenePS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter_NoMAPQ0WN_1.bed' ./data/Samples/$SAMPLE1/AllDepth.txt_DepthAbove2xMean.txt ./data/Samples/$SAMPLE1/AllDepth.txt_DepthAbove2xMean.txt 2xMeanCov Count
+		python ./src/PSscreen_BadSNPsFlankPS.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter_NoMAPQ0WN_1_2xMeanCovInterCount.bed' ./data/Samples/$SAMPLE1/AllDepth.txt_DepthAbove2xMean.txt ./data/Samples/$SAMPLE1/AllDepth.txt_DepthAbove2xMean.txt ./data/Samples/$SAMPLE1/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' ./data/Samples/$SAMPLE2/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table' 2xMeanCov 2 Count
+		### Append minor allele frequencies to each putative phase switch
+		echo "Append minor allele frequencies to each putative phase switch ./src/PSscreen_BadSNPsIntervenePS.py ./src/PSscreen_BadSNPsFlankPS.py"
+		python ./src/PSscreen_FetchMAF.py ./results/Comparisons/$COMP/chr$CHROM'_SwitchErrors.diff.switch_NoBadSNPInter_NoBadSNPWN_1_No0covInter_No0covWN_1_NoMAPQ0Inter_NoMAPQ0WN_1_2xMeanCovInterCount_2xMeanCovWN_2_Count.bed' ${SAMPLE1#*_} ./data/Samples/FEB_T508/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table_AD_MAF' ${SAMPLE2#*_} ./data/Samples/FEB_T513/hapblock_chr$CHROM'.phased_TEfiltered.recode_NoHapHet.recode_NonAbove2xMeanDepth.recode_SNPsOnly.vcf_NoGQLessThan99.recode_NoPQLessThan100.recode.vcf.table_AD_MAF'
 		done
 	done
 done
