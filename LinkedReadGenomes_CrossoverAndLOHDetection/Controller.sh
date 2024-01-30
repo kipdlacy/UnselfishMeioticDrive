@@ -14,3 +14,8 @@ bash ./ObtainPhaseOfAllSamplesAtAllDetectedCrossovers.sh
 
 ### Then get the hypothetical proportion of the genome at which we ought to be able to detect crossovers using our method
 bash ./DetectableGenomePropGetterController.sh
+
+### Plot data
+mkdir -p ./results/Plots/
+cd ./results/Plots
+R ../../CalcStatsAndPlotLinkedReadCrossoverRecomb.R
