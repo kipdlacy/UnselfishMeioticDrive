@@ -12,3 +12,5 @@ bash ./Compare_PhasingBetweenIndividuals.sh
 ### Then obtain the phase of all samples at high quality crossovers
 bash ./ObtainPhaseOfAllSamplesAtAllDetectedCrossovers.sh
 
+### Then get the hypothetical proportion of the genome at which we ought to be able to detect crossovers using our method
+bash ./DetectableGenomePropGetterController.sh
